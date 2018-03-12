@@ -24,6 +24,8 @@ target 'Mapply' do
 
   pod 'GoogleMaps'  # Remove this line if you don't want to support Google Maps on iOS
   pod 'react-native-google-maps', path: rn_maps_path  # Remove this line if you don't want to support Google Maps on iOS
+  pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+
 end
 
 post_install do |installer|

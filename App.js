@@ -1,128 +1,54 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 
-import { AppRegistry, StyleSheet, View, Dimensions } from 'react-native';
+import { AppRegistry, StyleSheet, View, Dimensions, Text } from 'react-native'
+import { EventRegister } from 'react-native-event-listeners'
+import ActionButton from 'react-native-action-button'
+import Map from './Components/Map'
 
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+let {width, height} = Dimensions.get('window')
 
-import MapStyle from './MapStyles/Desert.json';
+export default class App extends Component {
 
-let { width, height } = Dimensions.get('window');
+    addMarker() {
 
-const ASPECT_RATIO = width / height;
-const LATITUDE = 57.149651;
-const LONGITUDE =  -2.099075;
-const LATITUDE_DELTA = 0.0922;
-//const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
-const LONGITUDE_DELTA = 0.0421;
-
-
-export default class MapExample extends Component {
-    constructor() {
-        super();
-        this.state = {
-            region: {
-                latitude: LATITUDE,
-                longitude: LONGITUDE,
-                latitudeDelta: LATITUDE_DELTA,
-                longitudeDelta: LONGITUDE_DELTA,
-            },
-            marker: {
-                latitude: LATITUDE,
-                longitude: LONGITUDE,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-            },
-            markers: []
-        };
-    }
-    componentDidMount() {
-        let markers = this.state.markers
-
-        let marker = {
-            latlng: {
-                latitude: LATITUDE,
-                longitude: LONGITUDE,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-            },
-            title: "WOWW",
-            description: "MY MAN",
+        let data = {
+            title : 'New marker',
+            description :'New Description'
         }
-        markers.push(marker)
-        this.setState({markers : markers})
+        EventRegister.emit('onMarkerAdd', data)
     }
 
-    /*componentDidMount() {
-        navigator.geolocation.getCurrentPosition(
-            position => {
-                this.setState({
-                    region: {
-                        latitude: position.coords.latitude,
-                        longitude: position.coords.longitude,
-                        latitudeDelta: LATITUDE_DELTA,
-                        longitudeDelta: LONGITUDE_DELTA,
-                    }
-                });
-            },
-            (error) => console.log(error.message),
-            { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
-        );
-        this.watchID = navigator.geolocation.watchPosition(
-            position => {
-                this.setState({
-                    region: {
-                        latitude: position.coords.latitude,
-                        longitude: position.coords.longitude,
-                        latitudeDelta: LATITUDE_DELTA,
-                        longitudeDelta: LONGITUDE_DELTA,
-                    }
-                });
-            }
-        );
-    }
-    componentWillUnmount() {
-        navigator.geolocation.clearWatch(this.watchID);
-    }*/
-
-    render() {
+    render () {
         return (
-            <MapView
-                style={ styles.container }
-                customMapStyle={ MapStyle }
-
-                region={{
-                    latitude: LATITUDE,
-                    longitude: LONGITUDE,
-                    latitudeDelta: LATITUDE_DELTA,
-                    longitudeDelta: LONGITUDE_DELTA,
-                } }
-                showsMyLocationButton={true}
-                showsCompass={true}
-                showsUserLocation={true}
-                provider={ PROVIDER_GOOGLE }
-                /*onRegionChange={ region => this.setState({region}) }*/
-                /*onRegionChangeComplete={ region => this.setState({region}) }*/
-            >
-                {this.state.markers.map(marker => (
-                    <MapView.Marker
-                        coordinate={marker.latlng}
-                        title={marker.title}
-                        description={marker.description}
-                    />
-                ))}
-                {/*<MapView.Marker
-                    coordinate={ this.state.marker }
-                    title="HEI"
-                    description="EI"
-                />*/}
-            </MapView>
-        );
+            <View style={styles.container}>
+                <Map/>
+                <ActionButton
+                    buttonColor="rgba(231,76,60,1)"
+                    onPress={() => this.addMarker()}
+                    style={styles.actionButton}>
+                    {/*<ActionButton.Item buttonColor='#9b59b6' title="New Task"
+                                       onPress={() => this.addMarker()}>
+                        <Icon name="ios-add" style={styles.actionButtonIcon}/>
+                    </ActionButton.Item>*/}
+                </ActionButton>
+            </View>
+        )
     }
 }
+
 const styles = StyleSheet.create({
     container: {
         height: '100%',
         width: '100%',
-    }
-});
-AppRegistry.registerComponent('MapExample', () => MapExample);
+    },
+    actionButton: {
+        position: 'absolute',
+        width: 20,
+        height: 20,
+        left: 20,
+        top: height - 100,
+    },
+    actionButtonIcon: {},
+})
+
+AppRegistry.registerComponent('App', () => App)
