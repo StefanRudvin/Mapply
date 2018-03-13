@@ -1,33 +1,41 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 
-import { AppRegistry, StyleSheet, View } from 'react-native'
-import Map from './Components/Map'
-import NewMarkerModal from './Components/NewMarkerModal'
-
-import { createStore, applyMiddleware } from 'redux'
-import { Provider } from 'react-redux'
-import { apiMiddleware } from './Redux/redux'
-import { reducer } from './Redux/reducer'
-import NewMarkerButton from './Components/NewMarkerButton'
-
-// Create Redux store
-const store = createStore(reducer, {}, applyMiddleware(apiMiddleware))
-
-// Fetch movie data
-store.dispatch({type: 'GET_MARKER_DATA'})
+import { View, AppRegistry, Text, StyleSheet} from 'react-native'
+import Login from './Components/Login'
+import { EventRegister } from 'react-native-event-listeners'
+import MapLayOut from './Components/MapLayOut'
 
 export default class App extends Component {
 
-    render () {
+    constructor (props) {
+        super(props)
+
+        this.state = {
+            loggedIn: false
+        }
+    }
+
+    componentWillMount () {
+        this.userLoginListener = EventRegister.addEventListener('onUserLogin', () => {
+            this.setState({loggedIn: true})
+        })
+    }
+
+    componentWillUnmount () {
+        EventRegister.removeEventListener(this.userLoginListener)
+    }
+
+    render() {
         return (
-            <Provider store={store}>
-                <View style={styles.container}>
-                    <Map/>
-                    <NewMarkerButton/>
-                    <NewMarkerModal/>
-                </View>
-            </Provider>
-        )
+            <View style={styles.container}>
+                { this.state.loggedIn
+                    ?
+                    <MapLayOut/>
+                    :
+                    <Login/>
+                }
+            </View>
+        );
     }
 }
 

@@ -91,11 +91,14 @@ class Map extends React.Component {
     addMarker (data) {
         let markers = this.state.markers
 
+
+
         let marker = {
             coordinates: this.state.region,
             title: data.title,
             description: data.description,
         }
+
 
         markers.push(marker)
         this.setState({markers: markers})
@@ -169,7 +172,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 18,
         paddingVertical: 12,
         borderRadius: 20,
-        marginBottom: 20,
+        marginBottom: 40,
     },
     latlng: {
         width: 200,
