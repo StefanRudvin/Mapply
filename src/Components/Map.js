@@ -1,5 +1,6 @@
 import React from 'react'
 import MapStyle from '../MapStyles/Desert.json'
+import axios from 'axios'
 
 import {
     StyleSheet,
@@ -11,7 +12,8 @@ import {
 import { EventRegister } from 'react-native-event-listeners'
 
 import MapView, { ProviderPropType } from 'react-native-maps'
-import { connect } from 'react-redux';
+import { connect } from 'react-redux'
+import MyMarkers from './MyMarkers'
 
 const {width, height} = Dimensions.get('window')
 
@@ -49,9 +51,16 @@ class Map extends React.Component {
                 latitudeDelta: LATITUDE_DELTA,
                 longitudeDelta: LONGITUDE_DELTA,
             },
-            markers: [],
             loading: true,
+            markers: []
         }
+    }
+
+    getMarkers () {
+        axios.get(`http://localhost:3000/v1/markers.json`)
+            .then(function (data) {
+                this.setState({markers: data.data.markers})
+            })
     }
 
     onRegionChange (region) {
@@ -65,6 +74,7 @@ class Map extends React.Component {
         this.showModalListener = EventRegister.addEventListener('onShowMarkerModal', () => {
             this.centerOnLocation()
         })
+        this.getMarkers()
     }
 
     componentWillUnmount () {
@@ -96,8 +106,15 @@ class Map extends React.Component {
         this.props.addNewMarker(marker)
     }
 
+    parseCoords(coords) {
+        return {
+            latitude: coords.latitude,
+            longitude: coords.longitude
+        }
+    }
+
     render () {
-        const { markers, loading, refresh } = this.props;
+        const {markers, loading, refresh} = this.props
         return (
             <View style={styles.container}>
                 <MapView
@@ -110,47 +127,22 @@ class Map extends React.Component {
                     onRegionChange={region => this.onRegionChange(region)}
                     followsUserLocation={true}
                 >
-                    {
-                        markers ? <View>
-                            <MapView.Marker
-                                coordinate={this.state.region}
-                                title="I AM HERE"
-                                description="EI VITTU"/>
-                        </View> : <Button title="NO MARKERS" onPress={console.log(markers)}>
-
-                        </Button>
-                    }
-
-                    {markers
-                        ? <View>
-                            {markers.map(marker => (
-                                <MapView.Marker
-                                    coordinate={marker.coordinates}
-                                    title={marker.title}
-                                    description={marker.description}
-                                />
-                            ))}
-                        </View>
-                        : <View/>
-                    }
+                    <MyMarkers/>
+                    {this.state.markers.map(marker => (
+                        <MapView.Marker
+                            coordinate={marker.coordinates}
+                            title={marker.title}
+                            description={marker.description}
+                        />
+                    ))}
                 </MapView>
 
-                {markers
-                    ? <View>
-                        <Text>{markers[0].title}</Text>
-                        <Text>{markers[0].description}</Text>
-                        <Text>{markers[0].coordinates.latitude}</Text>
-                        <Text>{markers[0].coordinates.longitude}</Text>
-                    </View>
-                    : <View><Text>Loading...</Text></View>
-                }
                 <View style={[styles.bubble, styles.latlng]}>
                     <Text style={{textAlign: 'center'}}>
                         {this.state.region.latitude.toPrecision(7)},
                         {this.state.region.longitude.toPrecision(7)}
                     </Text>
                 </View>
-
             </View>
         )
     }
