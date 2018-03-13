@@ -32,7 +32,8 @@ export default class App extends Component {
                     ?
                     <MapLayOut/>
                     :
-                    <Login/>
+                    <MapLayOut/>
+                    //<Login/>
                 }
             </View>
         );

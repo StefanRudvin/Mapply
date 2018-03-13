@@ -5,7 +5,7 @@ import {
     StyleSheet,
     View,
     Text,
-    Dimensions,
+    Dimensions, Button,
 } from 'react-native'
 
 import { EventRegister } from 'react-native-event-listeners'
@@ -34,9 +34,9 @@ export const getCurrentLocation = () => {
     }),
     dispatch => ({
         refresh: () => dispatch({type: 'GET_MARKER_DATA'}),
+        addNewMarker: (data) => dispatch({type: 'CREATE_NEW_MARKER', data: data})
     }),
 )
-
 
 class Map extends React.Component {
     constructor (props) {
@@ -75,7 +75,6 @@ class Map extends React.Component {
     centerOnLocation () {
         return getCurrentLocation().then(position => {
             if (position) {
-                console.log('WAAAa')
                 this.setState({
                     region: {
                         latitude: position.coords.latitude,
@@ -89,20 +88,12 @@ class Map extends React.Component {
     }
 
     addMarker (data) {
-        let markers = this.state.markers
-
-
-
         let marker = {
             coordinates: this.state.region,
             title: data.title,
             description: data.description,
         }
-
-
-        markers.push(marker)
-        this.setState({markers: markers})
-        console.log('Marker added!')
+        this.props.addNewMarker(marker)
     }
 
     render () {
@@ -119,6 +110,16 @@ class Map extends React.Component {
                     onRegionChange={region => this.onRegionChange(region)}
                     followsUserLocation={true}
                 >
+                    {
+                        markers ? <View>
+                            <MapView.Marker
+                                coordinate={this.state.region}
+                                title="I AM HERE"
+                                description="EI VITTU"/>
+                        </View> : <Button title="NO MARKERS" onPress={console.log(markers)}>
+
+                        </Button>
+                    }
 
                     {markers
                         ? <View>
@@ -141,7 +142,7 @@ class Map extends React.Component {
                         <Text>{markers[0].coordinates.latitude}</Text>
                         <Text>{markers[0].coordinates.longitude}</Text>
                     </View>
-                    : <View><Text>NO MARKERS</Text></View>
+                    : <View><Text>Loading...</Text></View>
                 }
                 <View style={[styles.bubble, styles.latlng]}>
                     <Text style={{textAlign: 'center'}}>
@@ -149,6 +150,7 @@ class Map extends React.Component {
                         {this.state.region.longitude.toPrecision(7)}
                     </Text>
                 </View>
+
             </View>
         )
     }
@@ -172,7 +174,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 18,
         paddingVertical: 12,
         borderRadius: 20,
-        marginBottom: 40,
+        marginBottom: 20,
     },
     latlng: {
         width: 200,

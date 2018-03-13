@@ -12,6 +12,10 @@ const app = express();
 // Logger that outputs all requests into the console
 app.use(morgan('combined'));
 // Use v1 as prefix for all API endpoints
+let bodyParser = require('body-parser');
+app.use(bodyParser.json()); // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+
 app.use('/v1', router);
 
 import passport from 'passport';
