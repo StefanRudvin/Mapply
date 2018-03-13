@@ -19,6 +19,15 @@ const markers = [
             longitude: -2.199075,
         },
     },
+
+    {
+        title: 'Wa wa wand',
+        description: 'Whats up in the houseee',
+        coordinates: {
+            latitude: 37.33,
+            longitude: -122.02,
+        },
+    },
 ]
 
 // Connect to MongoDB

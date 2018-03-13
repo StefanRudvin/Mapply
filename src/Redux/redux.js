@@ -10,6 +10,7 @@ export const apiMiddleware = store => next => action => {
     switch (action.type) {
         // In case we receive an action to send an API request
         case 'GET_MARKER_DATA':
+            console.log('redux is geting shit')
             // Dispatch GET_MOVIE_DATA_LOADING to update loading state
             store.dispatch({type: 'GET_MARKER_DATA_LOADING'});
             // Make API call and dispatch appropriate actions when done

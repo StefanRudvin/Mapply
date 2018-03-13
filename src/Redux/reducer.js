@@ -16,3 +16,5 @@ export const reducer = (state = { markers: [], loading: true }, action) => {
             return state;
     }
 };
+
+export default reducer

@@ -11,6 +11,7 @@ import {
 import { EventRegister } from 'react-native-event-listeners'
 
 import MapView, { ProviderPropType } from 'react-native-maps'
+import { connect } from 'react-redux';
 
 const {width, height} = Dimensions.get('window')
 
@@ -26,6 +27,17 @@ export const getCurrentLocation = () => {
     })
 }
 
+@connect(
+    state => ({
+        markers: state.markers,
+        loading: state.loading,
+    }),
+    dispatch => ({
+        refresh: () => dispatch({type: 'GET_MARKER_DATA'}),
+    }),
+)
+
+
 class Map extends React.Component {
     constructor (props) {
         super(props)
@@ -37,7 +49,8 @@ class Map extends React.Component {
                 latitudeDelta: LATITUDE_DELTA,
                 longitudeDelta: LONGITUDE_DELTA,
             },
-            markers: []
+            markers: [],
+            loading: true,
         }
     }
 
@@ -90,6 +103,7 @@ class Map extends React.Component {
     }
 
     render () {
+        const { markers, loading, refresh } = this.props;
         return (
             <View style={styles.container}>
                 <MapView
@@ -102,14 +116,30 @@ class Map extends React.Component {
                     onRegionChange={region => this.onRegionChange(region)}
                     followsUserLocation={true}
                 >
-                    {this.state.markers.map(marker => (
-                        <MapView.Marker
-                            coordinate={marker.coordinates}
-                            title={marker.title}
-                            description={marker.description}
-                        />
-                    ))}
+
+                    {markers
+                        ? <View>
+                            {markers.map(marker => (
+                                <MapView.Marker
+                                    coordinate={marker.coordinates}
+                                    title={marker.title}
+                                    description={marker.description}
+                                />
+                            ))}
+                        </View>
+                        : <View/>
+                    }
                 </MapView>
+
+                {markers
+                    ? <View>
+                        <Text>{markers[0].title}</Text>
+                        <Text>{markers[0].description}</Text>
+                        <Text>{markers[0].coordinates.latitude}</Text>
+                        <Text>{markers[0].coordinates.longitude}</Text>
+                    </View>
+                    : <View><Text>NO MARKERS</Text></View>
+                }
                 <View style={[styles.bubble, styles.latlng]}>
                     <Text style={{textAlign: 'center'}}>
                         {this.state.region.latitude.toPrecision(7)},
@@ -144,21 +174,6 @@ const styles = StyleSheet.create({
     latlng: {
         width: 200,
         alignItems: 'stretch',
-    },
-    button: {
-        width: 100,
-        paddingHorizontal: 8,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginHorizontal: 5,
-    },
-    buttonContainer: {
-        flexDirection: 'row',
-        marginVertical: 20,
-        backgroundColor: 'transparent',
-    },
-    buttonText: {
-        textAlign: 'center',
     },
 })
 
